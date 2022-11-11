@@ -1,0 +1,13 @@
+html {
+    font-size: 1.125em;
+    font-family: 'Noto Sans SC', sans-serif;
+    height: 100%;
+}
+
+body {
+    @apply w-screen h-full overflow-scroll bg-primary-background
+}
+
+#__nuxt {
+    height: 100%;
+}
