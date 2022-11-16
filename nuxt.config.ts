@@ -2,4 +2,5 @@
 export default defineNuxtConfig({
     modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
     css: ['~/styles/global.css'],
+    plugins: ['~/plugins/vue-query.ts']
 })

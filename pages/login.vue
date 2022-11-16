@@ -18,7 +18,7 @@ function removePanel() {
         <div id="container"
             class="w-full h-full sm:h-1/3 sm:w-4/5 lg:w-3/5 lg:h-3/5 flex justify-center relative overflow-hidden bg-white rounded-xl shadow-2xl">
             <SignInForm />
-            <SignUpForm />
+            <SignUpForm />  
             <OverlayContainer>
                 <template #signIn>
                     <button @click="removePanel"
@@ -64,7 +64,7 @@ function removePanel() {
     z-index: 1;
     left: 0;
     opacity: 0;
-    transition: transform 0.6s ease-in-out;
+    transition: transform 0.6s ease-in-out, z-index 0.61s ease-in-out, opacity 0.61s ease-in-out;
 }
 
 #container.right-panel-active .sign-in-container {
@@ -115,7 +115,7 @@ function removePanel() {
 
     50%,
     100% {
-        opacity: 0;
+        opacity: 1;
         z-index: 5;
     }
 }
