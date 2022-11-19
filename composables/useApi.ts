@@ -7,7 +7,7 @@ export default function useApi() {
             ...options,
             initialCache: false,
             onResponseError({ request, response, options }) {
-                console.log('[fetch response error]', response._data?.message)
+                console.log('[fetch response error]', response._data)
             }
         })
     }

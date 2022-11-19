@@ -12,9 +12,7 @@ export default function useUserForm() {
     }
 
     const getUserInfo = async () => {
-        const headers = useRequestHeaders()
         const response = await api('/api/user')
-
         userStore.userInfo = response.data.value
     }
     return { login, getUserInfo }
