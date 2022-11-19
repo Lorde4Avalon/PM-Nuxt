@@ -1,16 +1,6 @@
 <script setup lang="ts">
-definePageMeta({
-  middleware: 'auth'
-  // or middleware: 'auth'
-})
-const router = useRouter()
 const userStore = useUserStore()
 const { getUserInfo } = useUserForm()
-
-// if (!userStore.authToken) {
-//     router.push({ path: '/login' })
-// }
-
 
 function Test() {
     getUserInfo()
