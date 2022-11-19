@@ -5,6 +5,9 @@ export default defineNuxtConfig({
     imports: {
         dirs: ['stores'],
     },
+    router: {
+        
+    },
     runtimeConfig: {
         apiBase: '',
         apiToken: ''

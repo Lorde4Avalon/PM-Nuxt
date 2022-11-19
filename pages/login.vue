@@ -11,6 +11,7 @@ function removePanel() {
 
 <template>
     <div class="h-full flex justify-center items-center">
+        <NuxtLink to="/">Go Index</NuxtLink>
         <div id="container"
             class="w-full h-full sm:h-1/3 sm:w-4/5 lg:w-3/5 lg:h-3/5 flex justify-center relative overflow-hidden bg-white rounded-xl shadow-2xl">
             <SignInForm />
