@@ -1,9 +1,12 @@
 import { defineStore } from "pinia";
+import { UserInfo } from "~~/types";
 
-export const useUserStore = defineStore('user', () => {
-    const isLogin = ref(false)
-
-    return {
-        isLogin
-    }
+export const useUserStore = defineStore('user', {
+    state: () => {
+        return {
+            authToken: null,
+            userInfo: null as UserInfo | null
+        }
+    },
+    persist: true
 })

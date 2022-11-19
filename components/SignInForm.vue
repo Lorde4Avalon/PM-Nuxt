@@ -1,6 +1,15 @@
+<script setup lang="ts">
+const form = {
+    username: 'valon123',
+    password: "Zhou2001"
+}
+const { login } = useUserForm();
+
+</script>
+
 <template>
-    <div class="form-container bg-white sign-in-container sm:w-1/2 absolute h-full">
-        <form action="#" class="h-full flex flex-col items-center justify-center">
+    <div class="form-container bg-white sign-in-container w-full sm:w-1/2 absolute h-full">
+        <div class="h-full flex flex-col items-center justify-center">
             <h1 class="font-bold text-3xl mt-10">Sign In</h1>
             <div class="flex flex-col mt-8 mb-10">
                 <label class="label">
@@ -14,8 +23,8 @@
                 <label class="label w-full justify-end">
                     <span class="label-text-alt">Forget password</span>
                 </label>
-                <button class="btn w-full mt-3 btn-info hover:bg-sky-500 text-white">Sign In</button>
+                <button @click="login(form)" class="btn w-full mt-3 btn-info hover:bg-sky-500 text-white">Sign In</button>
             </div>
-        </form>
+        </div>
     </div>
 </template>

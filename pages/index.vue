@@ -1,15 +1,25 @@
 <script setup lang="ts">
-import { useUserStore } from '../stores'
-
 const router = useRouter()
 const userStore = useUserStore()
+const { getUserInfo } = useUserForm()
 
-if (!userStore.isLogin) {
+if (!userStore.authToken) {
     router.push({ path: '/login' })
+}
+
+
+function Test() {
+    getUserInfo()
 }
 
 </script>
 
 <template>
-    <div class="font-bold text-4xl w-full text-center">index</div>
+    <div class="font-bold text-4xl w-full text-center">
+        index
+        <div class="">
+            {{ userStore.userInfo?.nickname }}
+        </div>
+        <button @click="Test">Test</button>
+    </div>
 </template>

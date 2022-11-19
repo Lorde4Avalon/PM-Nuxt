@@ -12,9 +12,10 @@
     "nuxt": "3.0.0-rc.13"
   },
   "dependencies": {
+    "@nuxtjs/axios": "^5.13.6",
     "@pinia/nuxt": "^0.4.3",
     "daisyui": "^2.39.0",
-    "vee-validate": "^4.7.2",
-    "vue-query": "^1.26.0"
+    "pinia-plugin-persistedstate": "^2.4.0",
+    "vee-validate": "^4.7.2"
   }
 }

@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import SignInForm from '../views/login/SignInForm.vue'
-import SignUpForm from '../views/login/SignUpForm.vue'
-import OverlayContainer from '../views/login/OverlayContainer.vue'
-
 function activePanel() {
     document.getElementById('container')?.classList.add('right-panel-active')
 }
