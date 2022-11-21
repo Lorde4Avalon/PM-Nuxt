@@ -3,7 +3,7 @@ const form = {
     username: 'valon123',
     password: "Zhou2001"
 }
-const { login } = useUserForm();
+const { login, getUserInfo } = useUserForm();
 
 </script>
 
@@ -23,7 +23,8 @@ const { login } = useUserForm();
                 <label class="label w-full justify-end">
                     <span class="label-text-alt">Forget password</span>
                 </label>
-                <button @click="login(form)" class="btn w-full mt-3 btn-info hover:bg-sky-500 text-white">Sign In</button>
+                <button @click="async () => { await login(form); getUserInfo() }"
+                    class="btn w-full mt-3 btn-info hover:bg-sky-500 text-white">Sign In</button>
             </div>
         </div>
     </div>

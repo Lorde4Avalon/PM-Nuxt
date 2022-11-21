@@ -8,5 +8,4 @@ export default defineNuxtRouteMiddleware((to, from) => {
     process.client && console.log('please login');
     return navigateTo('/login')
   }
-  console.log(userCookie);
 })

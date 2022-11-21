@@ -8,7 +8,7 @@ export default function useApi() {
             onResponseError({ request, response, options }) {
                 console.log('[fetch response error]', response._data)
                 if (response._data.statusCode === 500) {
-                    const user = useCookie('user')
+                    console.log('Server error');
                 }
             }
         })

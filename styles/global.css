@@ -5,9 +5,9 @@ html {
 }
 
 body {
-    @apply w-screen h-full overflow-scroll bg-primary-background
+    @apply w-screen h-full bg-primary-background
 }
 
 #__nuxt {
-    height: 100%;
+    height: 100vh;
 }
