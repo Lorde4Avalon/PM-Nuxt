@@ -2,6 +2,7 @@ import { UserInfo } from "~~/types"
 export default function useUserForm() {
     const userStore = useUserStore()
     const api = useApi()
+    
     const login = async (form: any) => {
 
         const response = await api('/api/user', {
@@ -13,10 +14,11 @@ export default function useUserForm() {
     }
 
     const register = async (form: any) => {
-        const response = await api('/api/register', {
+        const response = await api('/api/user/register', {
             method: 'POST',
             body: form
         })
+        return response
     }
 
     const getUserInfo = async () => {

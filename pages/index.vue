@@ -8,7 +8,7 @@ function Test() {
 </script>
 
 <template>
-    <div class="flex bg-white h-full">
+    <div class="flex bg-white">
         <SideBar />
         <div class="flex flex-col w-full">
             <HeadBar />
