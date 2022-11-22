@@ -6,7 +6,7 @@
             </h1>
         </div>
         <div class="mx-6 my-4">
-            <button class="btn bg-dark-purple/80 hover:bg-dark-purple rounded-full text-xs">Start a new Project</button>
+            <slot name="addProject"></slot>
         </div>
     </div>
 </template>

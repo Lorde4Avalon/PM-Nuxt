@@ -8,7 +8,6 @@ useHead({
 </script>
 
 <template>
-
   <Head>
     <Title>
       {{ title }}

@@ -7,7 +7,6 @@ function removePanel() {
 async function onSubmit(values: any) {
     delete values.confirmPassword
     const response = await register(values)
-    // console.log(response);
     if (response.error.value) {
         console.error('register error ' + `${response.error.value?.statusMessage}`);
         return
