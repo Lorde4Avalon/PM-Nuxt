@@ -6,6 +6,7 @@ module.exports = {
         "page-light":"#c5c7c7",
         "dark-purple": "#081A51",
         "light-white": "rgba(255,255,255,0.17)",
+        "select-gray": "#b6b7b8"
       },
     },
   },

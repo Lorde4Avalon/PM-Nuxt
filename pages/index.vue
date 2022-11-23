@@ -6,21 +6,23 @@ import {
     DialogPanel,
     DialogTitle,
 } from '@headlessui/vue'
-import { create } from 'domain';
 import { Form, Field, ErrorMessage } from 'vee-validate';
 import { Project } from '~~/types';
 const userStore = useUserStore()
 const { getUserInfo } = useUserForm()
 const { createProject, getAllProjects } = useProjectForm()
-const isOpen = ref(false)
 
+//Get data
 const { data, error, refresh } = await getAllProjects()
 const projects: Project[] = data as any
 onBeforeMount(() => refresh())
 
+//Actions
+const isOpen = ref(false)
 function setIsOpen(value: boolean) {
     isOpen.value = value
 }
+
 async function onSubmit(values: Project | any) {
     if (!values.projectName) {
         console.log('project Name empty');
@@ -48,24 +50,12 @@ async function onSubmit(values: Project | any) {
                     </button>
                 </template>
             </HeadBar>
-            <div class="h-full rounded-t-3xl p-7 bg-gray-100">
+            <div class="h-full rounded-t-3xl p-7 bg-gray-300/80">
                 <div class="flex flex-wrap gap-6">
-                    <div v-for="project in projects" class="card w-72 h-48 bg-white text-black">
-                        <div class="card-body">
-                            <h2 class="card-title">{{ project.projectName }}</h2>
-                            <p>{{ project.projectDescription }}</p>
-                            <div class="card-actions justify-end">
-                                <button class="btn">Check Detail</button>
-                            </div>
-                        </div>
+                    <div v-for="project in projects" class="indicator">
+                        <DashboardProjectCard :project="project" />
                     </div>
                 </div>
-                <!-- Test -->
-                <!-- Home page
-                {{ userStore.userInfo?.username }}
-                <button @click="() => { navigateTo('/login') }">Login</button>
-                <button @click="getUserInfo">GET</button>
-                <button @click="getAllProjects">GET</button> -->
             </div>
         </div>
         <DashboardUser />
@@ -102,7 +92,7 @@ async function onSubmit(values: Project | any) {
                                 <label class="label">
                                     <span class="label-text">Project Desc</span>
                                 </label>
-                                <Field name="projectDesc" as="textarea"
+                                <Field name="projectDescription" as="textarea"
                                     class="textarea textarea-bordered h-24 w-full max-w-xs"
                                     placeholder="Describe your project"></Field>
                                 <div class="flex mt-4 gap-x-4">

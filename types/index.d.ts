@@ -17,7 +17,8 @@ export interface Project {
     projectUpdatedDate: string,
     projectEndDate: string,
     users: any,
-    tasks: any
+    tasks: any,
+    isSelect: boolean
 }
 
 export interface Task {
