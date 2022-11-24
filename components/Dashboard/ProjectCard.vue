@@ -10,18 +10,18 @@ function setIsSelect(value: boolean) {
 }
 
 function onClick(project: Project) {
-    navigateTo(`/projects/${project.projectName}`)
+    navigateTo(`/projects/${project.projectName}#${project.projectId}`)
 }
 </script>
 
 <template>
-    <div :class="[isSelect ? 'bg-gray-100' : 'bg-white', 'cursor-pointer card w-72 h-48 text-black']"
+    <div :class="[isSelect ? 'bg-gray-100' : 'bg-white', 'cursor-pointer card w-72 h-full max-h-56 text-black']"
         @click="setIsSelect(!isSelect)">
         <input type="checkbox" :checked="isSelect"
             :class="[isSelect ? '' : 'hidden', 'indicator-item checkbox checkbox-sm']" />
         <div class="card-body">
             <h2 class="card-title">{{ project.projectName }}</h2>
-            <p>{{ project.projectDescription }}</p>
+            <p class="overflow-hidden">{{ project.projectDescription }}</p>
             <div class="card-actions justify-end">
                 <button class="btn" @click="onClick(project)">Enter Project</button>
             </div>

@@ -17,6 +17,7 @@
     "@pinia/nuxt": "^0.4.3",
     "daisyui": "^2.39.0",
     "pinia-plugin-persistedstate": "^2.4.0",
-    "vee-validate": "^4.7.2"
+    "vee-validate": "^4.7.2",
+    "vuedraggable": "^4.1.0"
   }
 }

@@ -5,12 +5,8 @@ export default defineNuxtConfig({
     imports: {
         dirs: ['stores'],
     },
-    router: {
-        
-    },
     runtimeConfig: {
-        apiBase: '',
-        apiToken: ''
+        apiBase: ''
     },
     plugins: ['~/plugins/persistedstate.ts']
 })

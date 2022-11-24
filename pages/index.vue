@@ -17,6 +17,7 @@ const { data, error, refresh } = await getAllProjects()
 const projects: Project[] = data as any
 onBeforeMount(() => refresh())
 
+
 //Actions
 const isOpen = ref(false)
 function setIsOpen(value: boolean) {

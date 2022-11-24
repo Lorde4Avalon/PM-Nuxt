@@ -20,5 +20,9 @@ export default function useProjectForm() {
         return res
     }
 
-    return { createProject, getAllProjects }
+    const getProject = async (id: number | string) => {
+        return await api(`/api/project/${id}`)
+    }
+
+    return { createProject, getAllProjects, getProject }
 }
