@@ -108,9 +108,22 @@ const project: Project = projectData as any
 const tasks: Task[] = taskData as any
 onBeforeMount(() => { projectRefresh(); taskRefresh(); })
 
+const dateTime = reactive({
+    startTime: null,
+    endTime: null
+})
 async function onSubmit(values: Project | any) {
     values['status'] = 'Todo'
-    console.log(values);
+    values['startTime'] = dateTime.startTime
+    values['endTime'] = dateTime.endTime
+    const { data, error } = await createTask(values, projectId);
+    if (error) {
+        console.log(error);
+    }
+
+    console.log(data);
+    taskRefresh()
+    console.log(tasks);
 }
 </script>
 
@@ -130,8 +143,7 @@ async function onSubmit(values: Project | any) {
                     <p class="text-xl">{{ project?.projectDescription }}</p>
                     <h1 class="text-base">Update At {{ project?.projectUpdatedDate }}</h1>
                 </div>
-                <button
-                    @click="setIsOpen(true)"
+                <button @click="setIsOpen(true)"
                     class="btn border-none w-40 text-white bg-dark-purple/90 hover:bg-dark-purple m-2 mt-3 p-2 shadow rounded-lg text-center font-medium">
                     <span class="font-bold text-2xl mr-2">+</span> Add a new task
                 </button>
@@ -162,7 +174,7 @@ async function onSubmit(values: Project | any) {
         <Dialog as="div" @close="setIsOpen(false)" class="relative z-10">
             <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
                 leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
-                <div class="fixed inset-0 bg-black bg-opacity-25" />
+                <div class="fixed inset-0 bg-black bg-opacity-25"></div>
             </TransitionChild>
 
             <div class="fixed inset-0 overflow-y-auto">
@@ -171,7 +183,7 @@ async function onSubmit(values: Project | any) {
                         enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
                         leave-to="opacity-0 scale-95">
                         <DialogPanel
-                            class="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                            class="w-full max-w-xl transform overflow-y-auto rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                             <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
                                 Add a new Task
                             </DialogTitle>
@@ -186,7 +198,36 @@ async function onSubmit(values: Project | any) {
                                 </label>
                                 <Field name="taskName" type="text" placeholder="Type here"
                                     class="input input-bordered w-full max-w-xs" />
-
+                                <!-- date picker -->
+                                <label class="label">
+                                    <span class="label-text">Task Schedule</span>
+                                </label>
+                                <div class="flex items-center">
+                                    <div class="relative">
+                                        <div
+                                            class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                                        </div>
+                                        <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss"
+                                            label="startTime"
+                                            formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true" v-model="dateTime.startTime" />
+                                        <!-- <Field name="startTime" type="date"
+                                            class="input input-bordered bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            placeholder="Select date start" >
+                                        </Field> -->
+                                    </div>
+                                    <span class="mx-4 text-gray-500">to</span>
+                                    <div class="relative">
+                                        <div
+                                            class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                                        </div>
+                                        <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss"
+                                            label="endTime"
+                                            formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true" v-model="dateTime.endTime" />
+                                        <!-- <Field name="endTime" type="date"
+                                            class="input input-bordered bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            placeholder="Select date end" /> -->
+                                    </div>
+                                </div>
                                 <label class="label">
                                     <span class="label-text">Task Desc</span>
                                 </label>

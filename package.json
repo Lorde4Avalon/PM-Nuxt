@@ -18,6 +18,8 @@
     "daisyui": "^2.39.0",
     "pinia-plugin-persistedstate": "^2.4.0",
     "vee-validate": "^4.7.2",
+    "vue-ctk-date-time-picker": "^3.0.0-alpha.0",
+    "vue-tailwind-datepicker": "^1.1.5",
     "vuedraggable": "^4.1.0"
   }
 }
