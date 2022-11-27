@@ -1,20 +1,19 @@
 import { UserInfo } from "~~/types"
 export default function useUserForm() {
     const userStore = useUserStore()
-    const api = useApi()
     
     const login = async (form: any) => {
 
-        const response = await api('/api/user', {
+        const response = await useApi<any>('/api/user', {
             method: 'POST',
             body: form
         })
-        userStore.authToken = response.data.value?.token
+        userStore.authToken = response.data.value?.data.token
         navigateTo('/')
     }
 
     const register = async (form: any) => {
-        const response = await api('/api/user/register', {
+        const response = await useApi('/api/user/register', {
             method: 'POST',
             body: form
         })
@@ -22,8 +21,8 @@ export default function useUserForm() {
     }
 
     const getUserInfo = async () => {
-        const response = await api('/api/user')
-        userStore.userInfo = response.data.value as any
+        const response = await useApi('/api/user')
+        userStore.userInfo = response.data.value?.data
     }
     return { login, register, getUserInfo }
 }

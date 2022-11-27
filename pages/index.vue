@@ -13,9 +13,9 @@ const { getUserInfo } = useUserForm()
 const { createProject, getAllProjects } = useProjectForm()
 
 //Get data
-const { data, error, refresh } = await getAllProjects()
-const projects: Project[] = data as any
+const { data, refresh } = await getAllProjects()
 onBeforeMount(() => refresh())
+const projectsData = data
 
 
 //Actions
@@ -53,7 +53,7 @@ async function onSubmit(values: Project | any) {
             </HeadBar>
             <div class="h-full rounded-t-3xl p-7 bg-gray-300/80">
                 <div class="flex flex-wrap gap-6">
-                    <div v-for="project in projects" class="indicator">
+                    <div v-for="project in projectsData?.data" class="indicator">
                         <DashboardProjectCard :project="project" />
                     </div>
                 </div>

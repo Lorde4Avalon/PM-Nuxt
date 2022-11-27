@@ -11,120 +11,70 @@ import { Form, Field, ErrorMessage } from 'vee-validate';
 definePageMeta({
     layout: "project",
 })
+
+//Get data
+const { getProject } = useProjectForm()
+const { createTask, getAllTasks, updateTask} = useTaskForm()
+const route = useRoute()
+const projectId: number = +(route.hash.slice(1))
+const { data: projectData, refresh: projectRefresh } = await getProject(projectId)
+const { data: taskData, refresh: taskRefresh } = await getAllTasks(projectId)
+
 //Actions
 const isOpen = ref(false)
 function setIsOpen(value: boolean) {
     isOpen.value = value
 }
-const Columns = ref([
+const isTaskOpen = ref(false)
+function setIsTaskOpen(value: boolean) {
+    isTaskOpen.value = value
+}
+const taskColumns = computed(() => [
     {
-        title: "To Do", tasks: [
-            {
-                id: 1,
-                title: "Add discount code to checkout page",
-                date: "Sep 14",
-                type: "Feature Request"
-            },
-            {
-                id: 2,
-                title: "Provide documentation on integrations",
-                date: "Sep 12"
-            },
-            {
-                id: 3,
-                title: "Design shopping cart dropdown",
-                date: "Sep 9",
-                type: "Design"
-            },
-            {
-                id: 4,
-                title: "Add discount code to checkout page",
-                date: "Sep 14",
-                type: "Feature Request"
-            },
-            {
-                id: 5,
-                title: "Test checkout flow",
-                date: "Sep 15",
-                type: "QA"
-            }]
+        title: "To Do", tasks: taskData.value?.data?.filter(task => task.status == "Todo") || []
     },
     {
-        title: "In progress", tasks: [
-            {
-                id: 6,
-                title: "Design shopping cart dropdown",
-                date: "Sep 9",
-                type: "Design"
-            },
-            {
-                id: 7,
-                title: "Add discount code to checkout page",
-                date: "Sep 14",
-                type: "Feature Request"
-            },
-            {
-                id: 8,
-                title: "Provide documentation on integrations",
-                date: "Sep 12",
-                type: "Backend"
-            }
-        ]
+        title: "In progress", tasks: taskData.value?.data?.filter(task => task.status == "Inprogress") || []
     },
     {
-        title: "Done", tasks: [
-            {
-                id: 6,
-                title: "Design shopping cart dropdown",
-                date: "Sep 9",
-                type: "Design"
-            },
-            {
-                id: 7,
-                title: "Add discount code to checkout page",
-                date: "Sep 14",
-                type: "Feature Request"
-            },
-            {
-                id: 8,
-                title: "Provide documentation on integrations",
-                date: "Sep 12",
-                type: "Backend"
-            }
-        ]
+        title: "Done", tasks: taskData.value?.data?.filter(task => task.status == "Done") || []
     }
 ])
 const drag = ref(false)
 
-
-const { getProject } = useProjectForm()
-const { createTask, getAllTasks } = useTaskForm()
-const route = useRoute()
-const projectId: number = +(route.hash.slice(1))
-//Get data
-const { data: projectData, refresh: projectRefresh } = await getProject(projectId)
-const { data: taskData, refresh: taskRefresh } = await getAllTasks(projectId)
-const project: Project = projectData as any
-const tasks: Task[] = taskData as any
-onBeforeMount(() => { projectRefresh(); taskRefresh(); })
-
+// func
+onBeforeMount(() => taskRefresh())
 const dateTime = reactive({
     startTime: null,
     endTime: null
 })
-async function onSubmit(values: Project | any) {
+const selectTask = ref<Task>({
+    taskName: '',
+    status: ''
+})
+function showTask(element: Task) {
+    selectTask.value = element
+    setIsTaskOpen(true)
+}
+
+async function onSubmit(values: Task | any) {
     values['status'] = 'Todo'
     values['startTime'] = dateTime.startTime
     values['endTime'] = dateTime.endTime
     const { data, error } = await createTask(values, projectId);
-    if (error) {
-        console.log(error);
+    if (error.value) {
+        console.log(error.value);
+        return
     }
-
-    console.log(data);
     taskRefresh()
-    console.log(tasks);
+    setIsOpen(false)
 }
+
+async function onUpdateSubmit(values: Task | any) {
+    const { data, error } = await updateTask(values, projectId, selectTask.value.taskId)
+    console.log(data);
+}   
+
 </script>
 
 <template>
@@ -140,8 +90,8 @@ async function onSubmit(values: Project | any) {
             <div class="flex justify-between items-center w-full max-w-6xl">
                 <div>
                     <h1 class="text-4xl font-bold">{{ $route.params.name }}</h1>
-                    <p class="text-xl">{{ project?.projectDescription }}</p>
-                    <h1 class="text-base">Update At {{ project?.projectUpdatedDate }}</h1>
+                    <p class="text-xl">{{ projectData?.data?.projectDescription }}</p>
+                    <h1 class="text-base">Update At {{ projectData?.data?.projectUpdatedDate }}</h1>
                 </div>
                 <button @click="setIsOpen(true)"
                     class="btn border-none w-40 text-white bg-dark-purple/90 hover:bg-dark-purple m-2 mt-3 p-2 shadow rounded-lg text-center font-medium">
@@ -149,7 +99,7 @@ async function onSubmit(values: Project | any) {
                 </button>
             </div>
             <div class="flex py-8">
-                <div v-for="column in Columns" :key="column.title"
+                <div v-for="column in taskColumns" :key="column.title"
                     class="bg-gray-100 rounded-lg px-3 py-3 w-full max-w-sm mr-4">
                     <div class="flex justify-between">
                         <p class="text-gray-700 font-semibold font-sans tracking-wide text-sm">{{ column.title }}</p>
@@ -159,11 +109,12 @@ async function onSubmit(values: Project | any) {
                             <circle cx="96" cy="256" r="48" fill="currentColor" />
                         </svg>
                     </div>
-                    <draggable @start="drag = true" @end="drag = false" @change="" :list="column.tasks" itemKey="id"
+                    <draggable @start="drag = true" @end="drag = false" :list="column.tasks" itemKey="id"
                         :animation="200" ghost-class="ghost-card" group="tasks" class="flex flex-col h-full">
                         <!-- must use element as task -->
                         <template #item="{ element, index }">
-                            <DashboardTaskCard :key="index" :task="element" class="mt-3 cursor-move" />
+                            <DashboardTaskCard @click="showTask(element)" :key="index" :task="element"
+                                class="mt-3 cursor-move" />
                         </template>
                     </draggable>
                 </div>
@@ -207,25 +158,18 @@ async function onSubmit(values: Project | any) {
                                         <div
                                             class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                                         </div>
-                                        <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss"
-                                            label="startTime"
-                                            formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true" v-model="dateTime.startTime" />
-                                        <!-- <Field name="startTime" type="date"
-                                            class="input input-bordered bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            placeholder="Select date start" >
-                                        </Field> -->
+                                        <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss" label="startTime"
+                                            formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true"
+                                            v-model="dateTime.startTime" />
                                     </div>
                                     <span class="mx-4 text-gray-500">to</span>
                                     <div class="relative">
                                         <div
                                             class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                                         </div>
-                                        <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss"
-                                            label="endTime"
-                                            formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true" v-model="dateTime.endTime" />
-                                        <!-- <Field name="endTime" type="date"
-                                            class="input input-bordered bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            placeholder="Select date end" /> -->
+                                        <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss" label="endTime"
+                                            formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true"
+                                            v-model="dateTime.endTime" />
                                     </div>
                                 </div>
                                 <label class="label">
@@ -243,6 +187,76 @@ async function onSubmit(values: Project | any) {
                                     <button
                                         class="btn inline-flex justify-center rounded-full border-none bg-dark-purple/90 hover:bg-dark-purple px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                                         Add Project
+                                    </button>
+                                </div>
+                            </Form>
+                        </DialogPanel>
+                    </TransitionChild>
+                </div>
+            </div>
+        </Dialog>
+    </TransitionRoot>
+    <TransitionRoot appear :show="isTaskOpen" as="template">
+        <Dialog as="div" @close="setIsTaskOpen(false)" class="relative z-10">
+            <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
+                leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
+                <div class="fixed inset-0 bg-black bg-opacity-25"></div>
+            </TransitionChild>
+
+            <div class="fixed inset-0 overflow-y-auto">
+                <div class="flex min-h-full items-center justify-center p-4 text-center">
+                    <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
+                        enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
+                        leave-to="opacity-0 scale-95">
+                        <DialogPanel
+                            class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                                Update Task Info
+                            </DialogTitle>
+                            <Form @submit="onUpdateSubmit" class="mt-2">
+                                <label class="label">
+                                    <span class="label-text">Task Name</span>
+                                </label>
+                                <Field name="taskName" type="text" :value="selectTask.taskName" placeholder="Type here"
+                                    class="input input-bordered w-full max-w-xs" />
+                                <!-- date picker -->
+                                <label class="label">
+                                    <span class="label-text">Task Schedule</span>
+                                </label>
+                                <div class="flex items-center">
+                                    <div class="relative">
+                                        <div
+                                            class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                                        </div>
+                                        <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss" label="startTime"
+                                            formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true"
+                                            :value="selectTask.startTime" v-model="dateTime.startTime" />
+                                    </div>
+                                    <span class="mx-4 text-gray-500">to</span>
+                                    <div class="relative">
+                                        <div
+                                            class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                                        </div>
+                                        <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss" label="endTime"
+                                            formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true"
+                                            :value="selectTask.endTime" v-model="dateTime.endTime" />
+                                    </div>
+                                </div>
+                                <label class="label">
+                                    <span class="label-text">Task Desc</span>
+                                </label>
+                                <Field name="description" as="textarea" :value="selectTask.description"
+                                    class="textarea textarea-bordered h-24 w-full max-w-xs"
+                                    placeholder="Describe your Task"></Field>
+                                <div class="flex mt-4 gap-x-4">
+                                    <button type="button"
+                                        class="btn inline-flex justify-center rounded-full border-none bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                        @click="setIsTaskOpen(false)">
+                                        Cancel
+                                    </button>
+                                    <button
+                                        class="btn inline-flex justify-center rounded-full border-none bg-dark-purple/90 hover:bg-dark-purple px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+                                        Update Project
                                     </button>
                                 </div>
                             </Form>

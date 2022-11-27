@@ -1,10 +1,9 @@
 import { Project } from "~~/types"
 
 export default function useProjectForm() {
-    const api = useApi()
     const userStore = useUserStore()
     const createProject = async (data: Project) => {
-        const res = await api('/api/project', {
+        const res = await useApi<any>('/api/project', {
             method: 'POST',
             body: data
         })
@@ -12,7 +11,7 @@ export default function useProjectForm() {
     }
 
     const getAllProjects = async () => {
-        const res = await api('/api/project', {
+        const res = await useApi<Project[]>('/api/project', {
             query: {
                 username: userStore.userInfo?.username
             }
@@ -21,7 +20,7 @@ export default function useProjectForm() {
     }
 
     const getProject = async (id: number | string) => {
-        return await api(`/api/project/${id}`)
+        return await useApi<Project>(`/api/project/${id}`)
     }
 
     return { createProject, getAllProjects, getProject }

@@ -1,12 +1,12 @@
 import { Task } from "~~/types"
 
 export default function useTaskForm() {
-    const api = useApi()
     const userStore = useUserStore()
     const createTask = async (data: Task, projectId: number) => {
-        const res = await api('/api/task', {
+        const res = await useApi('/api/task', {
             method: 'POST',
             body: data,
+            key: 'createTask',
             query: {
                 projectId
             }
@@ -14,8 +14,18 @@ export default function useTaskForm() {
         return res
     }
 
+    const updateTask = async (data: Task, projectId: number, id: number | string | undefined) => {
+        return await useApi(`/api/task/${id}`, {
+            method: 'PUT',
+            body: data,
+            query: {
+                projectId
+            }
+        })
+    }
+
     const getAllTasks = async (projectId: number) => {
-        const res = await api('/api/task', {
+        const res = await useApi<Task[]>('/api/task', {
             query: {
                 projectId
             }
@@ -24,8 +34,10 @@ export default function useTaskForm() {
     }
 
     const getTask = async (id: number | string) => {
-        return await api(`/api/task/${id}`)
+        return await useApi<Task>(`/api/task/${id}`,{
+            key: `getTask#${id}`
+        })
     }
 
-    return { createTask, getAllTasks, getTask }
+    return { createTask, updateTask, getAllTasks, getTask }
 }
