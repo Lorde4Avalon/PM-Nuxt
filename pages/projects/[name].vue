@@ -14,7 +14,7 @@ definePageMeta({
 
 //Get data
 const { getProject } = useProjectForm()
-const { createTask, getAllTasks, updateTask} = useTaskForm()
+const { createTask, getAllTasks, updateTask } = useTaskForm()
 const route = useRoute()
 const projectId: number = +(route.hash.slice(1))
 const { data: projectData, refresh: projectRefresh } = await getProject(projectId)
@@ -44,16 +44,18 @@ const drag = ref(false)
 
 // func
 onBeforeMount(() => taskRefresh())
-const dateTime = reactive({
-    startTime: null,
-    endTime: null
-})
 const selectTask = ref<Task>({
     taskName: '',
     status: ''
 })
+const dateTime = reactive({
+    startTime: selectTask.value.startTime,
+    endTime: selectTask.value.endTime
+})
 function showTask(element: Task) {
-    selectTask.value = element
+    selectTask.value = {
+        ...element
+    }
     setIsTaskOpen(true)
 }
 
@@ -71,9 +73,23 @@ async function onSubmit(values: Task | any) {
 }
 
 async function onUpdateSubmit(values: Task | any) {
+    if (!selectTask.value.status) {
+        values['status'] = 'Todo'
+    } else {
+        values['status'] = selectTask.value.status
+    }
+    values['startTime'] = dateTime.startTime
+    values['endTime'] = dateTime.endTime
     const { data, error } = await updateTask(values, projectId, selectTask.value.taskId)
-    console.log(data);
-}   
+    taskRefresh()
+    setIsTaskOpen(false)
+}
+//select options
+const selectOptions = ref([
+    { name: 'Todo' },
+    { name: 'Inprogress' },
+    { name: 'Done' },
+])
 
 </script>
 
@@ -186,7 +202,7 @@ async function onUpdateSubmit(values: Task | any) {
                                     </button>
                                     <button
                                         class="btn inline-flex justify-center rounded-full border-none bg-dark-purple/90 hover:bg-dark-purple px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
-                                        Add Project
+                                        Add Task
                                     </button>
                                 </div>
                             </Form>
@@ -209,7 +225,7 @@ async function onUpdateSubmit(values: Task | any) {
                         enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
                         leave-to="opacity-0 scale-95">
                         <DialogPanel
-                            class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                            class="w-full max-w-md transform overflow-auto rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                             <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
                                 Update Task Info
                             </DialogTitle>
@@ -219,6 +235,13 @@ async function onUpdateSubmit(values: Task | any) {
                                 </label>
                                 <Field name="taskName" type="text" :value="selectTask.taskName" placeholder="Type here"
                                     class="input input-bordered w-full max-w-xs" />
+                                <label class="label">
+                                    <span class="label-text">Task Status</span>
+                                </label>
+                                <select v-model="selectTask.status" class="select select-bordered w-full max-w-xs">
+                                    <option v-for="(option, index) in selectOptions" :key="index" :value="option.name">
+                                        {{ option.name }}</option>
+                                </select>
                                 <!-- date picker -->
                                 <label class="label">
                                     <span class="label-text">Task Schedule</span>
@@ -230,7 +253,7 @@ async function onUpdateSubmit(values: Task | any) {
                                         </div>
                                         <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss" label="startTime"
                                             formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true"
-                                            :value="selectTask.startTime" v-model="dateTime.startTime" />
+                                            v-model="dateTime.startTime" />
                                     </div>
                                     <span class="mx-4 text-gray-500">to</span>
                                     <div class="relative">
@@ -239,7 +262,7 @@ async function onUpdateSubmit(values: Task | any) {
                                         </div>
                                         <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss" label="endTime"
                                             formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true"
-                                            :value="selectTask.endTime" v-model="dateTime.endTime" />
+                                            v-model="dateTime.endTime" />
                                     </div>
                                 </div>
                                 <label class="label">
