@@ -24,4 +24,15 @@ export default defineEventHandler(async (event) => {
         })
         return response
     }
+    if (event.node.req.method === 'DELETE') {
+        const body = await readBody(event);
+        const response: any = await $fetch(`${apiBase}/api/project/delete/multi`, {
+            method: 'DELETE',
+            body,
+            headers: {
+                Authorization: 'Bearer ' + authToken
+            }
+        })
+        return response
+    }
 });

@@ -10,12 +10,11 @@ import { Form, Field, ErrorMessage } from 'vee-validate';
 import { Project } from '~~/types';
 const userStore = useUserStore()
 const { getUserInfo } = useUserForm()
-const { createProject, getAllProjects } = useProjectForm()
+const { createProject, getAllProjects, deleteMultiProjects } = useProjectForm()
 
 //Get data
-const { data, refresh } = await getAllProjects()
+const { data: projectsData, refresh } = await getAllProjects()
 onBeforeMount(() => refresh())
-const projectsData = data
 
 
 //Actions
@@ -24,9 +23,32 @@ function setIsOpen(value: boolean) {
     isOpen.value = value
 }
 
+let selected = ref<Project[]>([])
+function handleSelect(project: Project) {
+    project.isSelect = !project.isSelect
+    if (project.isSelect) {
+        selected.value.push(project)
+    } else {
+        selected.value = selected.value.filter(project => project.isSelect)
+    }
+}
+
+async function handleDeleteProjects() {
+    const projectSet = {
+        projectIdList: selected.value.map(item => item.projectId)
+    }
+    const { data, error } = await deleteMultiProjects(projectSet)
+    if (error.value) {
+        console.error('register error ' + `${error.value?.statusMessage}`);
+        return
+    }
+    selected.value = []
+    refresh()
+}
+
 async function onSubmit(values: Project | any) {
     if (!values.projectName) {
-        console.log('project Name empty');
+        console.error('project Name empty');
         return
     }
     const response = await createProject(values)
@@ -51,10 +73,16 @@ async function onSubmit(values: Project | any) {
                     </button>
                 </template>
             </HeadBar>
-            <div class="h-full rounded-t-3xl p-7 bg-gray-300/80">
+            <div class="h-full rounded-t-3xl p-6 pt-4 bg-gray-300/80">
+                <div class="flex w-full justify-end mb-3">
+                    <button @click="handleDeleteProjects"
+                        :class="[selected.length > 0 ? 'block' : 'invisible', 'btn border-none bg-red-400 hover:bg-red-500 rounded-full text-xs']">
+                        Delete Project
+                    </button>
+                </div>
                 <div class="flex flex-wrap gap-6">
                     <div v-for="project in projectsData?.data" class="indicator">
-                        <DashboardProjectCard :project="project" />
+                        <DashboardProjectCard @click="handleSelect(project)" :project="project" />
                     </div>
                 </div>
             </div>
@@ -114,4 +142,4 @@ async function onSubmit(values: Project | any) {
             </div>
         </Dialog>
     </TransitionRoot>
-</template>
+</template>  

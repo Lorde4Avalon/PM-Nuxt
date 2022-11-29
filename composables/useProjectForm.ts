@@ -3,7 +3,7 @@ import { Project } from "~~/types"
 export default function useProjectForm() {
     const userStore = useUserStore()
     const createProject = async (data: Project) => {
-        const res = await useApi<any>('/api/project', {
+        const res = await useApi('/api/project', {
             method: 'POST',
             body: data
         })
@@ -23,5 +23,13 @@ export default function useProjectForm() {
         return await useApi<Project>(`/api/project/${id}`)
     }
 
-    return { createProject, getAllProjects, getProject }
+    const deleteMultiProjects = async (body: any) => {
+        const res = await useApi('/api/project', {
+            method: 'DELETE',
+            body
+        })
+        return res
+    }
+
+    return { createProject, getAllProjects, getProject, deleteMultiProjects }
 }

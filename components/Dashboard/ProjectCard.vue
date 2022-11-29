@@ -18,7 +18,7 @@ function onClick(project: Project) {
     <div :class="[isSelect ? 'bg-gray-100' : 'bg-white', 'cursor-pointer card w-72 h-full max-h-56 text-black']"
         @click="setIsSelect(!isSelect)">
         <input type="checkbox" :checked="isSelect"
-            :class="[isSelect ? '' : 'hidden', 'indicator-item checkbox checkbox-sm']" />
+            :class="[isSelect ? '' : 'hidden', 'projectCheck indicator-item checkbox checkbox-sm']" />
         <div class="card-body">
             <h2 class="card-title">{{ project.projectName }}</h2>
             <p class="overflow-hidden">{{ project.projectDescription }}</p>
