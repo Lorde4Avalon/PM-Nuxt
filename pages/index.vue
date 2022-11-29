@@ -62,9 +62,9 @@ async function onSubmit(values: Project | any) {
 </script>
 
 <template>
-    <div class="flex bg-white">
+    <div class="flex h-full bg-white">
         <SideBar />
-        <div class="flex flex-col w-full">
+        <div class="flex flex-col w-full h-full">
             <HeadBar>
                 <template #addProject>
                     <button @click="setIsOpen(true)"
@@ -73,7 +73,7 @@ async function onSubmit(values: Project | any) {
                     </button>
                 </template>
             </HeadBar>
-            <div class="h-full rounded-t-3xl p-6 pt-4 bg-gray-300/80">
+            <div class="h-full rounded-t-3xl p-6 pt-4 bg-gray-300/80 overflow-auto">
                 <div class="flex w-full justify-end mb-3">
                     <button @click="handleDeleteProjects"
                         :class="[selected.length > 0 ? 'block' : 'invisible', 'btn border-none bg-red-400 hover:bg-red-500 rounded-full text-xs']">

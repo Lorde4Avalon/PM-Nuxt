@@ -97,7 +97,7 @@ const selectOptions = ref([
     <div class="w-full">
         <div class="bg-gray-100 flex justify-between py-5 px-7">
             <div class="titles">
-                <h1 class="font-semibold text-2xl rounded-lg bg-gray-200 py-2 px-4">
+                <h1 @click="() => navigateTo('/')" class="cursor-pointer font-semibold text-2xl rounded-lg bg-gray-200 py-2 px-4">
                     Projects
                 </h1>
             </div>
