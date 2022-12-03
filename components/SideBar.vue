@@ -1,5 +1,8 @@
 <script setup lang="ts">
 const open = ref(true)
+
+const { logout } = useUserForm()
+
 const Menu = [
     { title: "Dashboard", src: "Chart_fill" },
     { title: "Inbox", src: "Chat" },
@@ -9,6 +12,7 @@ const Menu = [
     { title: "Analytics", src: "Chart" },
     { title: "Files ", src: "Folder", gap: true },
     { title: "Setting", src: "Setting" },
+    { title: "Logout", src: "Logout", gap: true, func: logout }
 ]
 </script>
 
@@ -26,6 +30,7 @@ const Menu = [
         </div>
         <ul class="pt-6">
             <li v-for="item in Menu"
+                @click="item.func"
                 :class="[item.gap ? 'mt-9' : 'mt-2', 'flex rounded-md p-2 cursor-pointer hover:bg-light-white text-gray-300 text-sm items-center gap-x-4']">
                 <img :src='`/${item.src}.png`' alt="item">
                 <span :class="[open ? '' : 'hidden', 'origin-left duration-200']">{{ item.title }}</span>

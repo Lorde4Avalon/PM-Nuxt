@@ -20,9 +20,14 @@ export default function useUserForm() {
         return response
     }
 
+    const logout = () => {
+        userStore.authToken = null
+        location.reload()
+    }
+
     const getUserInfo = async () => {
         const response = await useApi('/api/user')
         userStore.userInfo = response.data.value?.data
     }
-    return { login, register, getUserInfo }
+    return { login, logout, register, getUserInfo }
 }
