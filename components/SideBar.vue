@@ -4,15 +4,15 @@ const open = ref(true)
 const { logout } = useUserForm()
 
 const Menu = [
-    { title: "Dashboard", src: "Chart_fill" },
-    { title: "Inbox", src: "Chat" },
-    { title: "Accounts", src: "User", gap: true },
-    { title: "Schedule ", src: "Calendar" },
-    { title: "Search", src: "Search" },
-    { title: "Analytics", src: "Chart" },
-    { title: "Files ", src: "Folder", gap: true },
-    { title: "Setting", src: "Setting" },
-    { title: "Logout", src: "Logout", gap: true, func: logout }
+    { title: "Dashboard", src: "Chart_fill.png" },
+    { title: "Inbox", src: "Chat.png" },
+    { title: "Accounts", src: "User.png", gap: true },
+    { title: "Schedule ", src: "Calendar.png" },
+    { title: "Search", src: "Search.png" },
+    { title: "Analytics", src: "Chart.png" },
+    { title: "Files ", src: "Folder.png", gap: true },
+    { title: "Setting", src: "Setting.png" },
+    { title: "Logout", src: "", svg: true, gap: true, func: logout }
 ]
 </script>
 
@@ -29,10 +29,13 @@ const Menu = [
             </h1>
         </div>
         <ul class="pt-6">
-            <li v-for="item in Menu"
-                @click="item.func"
+            <li v-for="item in Menu" @click="item.func"
                 :class="[item.gap ? 'mt-9' : 'mt-2', 'flex rounded-md p-2 cursor-pointer hover:bg-light-white text-gray-300 text-sm items-center gap-x-4']">
-                <img :src='`/${item.src}.png`' alt="item">
+                <img v-if="item.src" :src='`/${item.src}`' alt="item">
+                <svg v-if="item.svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="currentColor"
+                        d="M5 21q-.825 0-1.413-.587Q3 19.825 3 19V5q0-.825.587-1.413Q4.175 3 5 3h7v2H5v14h7v2Zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5Z" />
+                </svg>
                 <span :class="[open ? '' : 'hidden', 'origin-left duration-200']">{{ item.title }}</span>
             </li>
         </ul>
