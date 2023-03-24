@@ -23,7 +23,7 @@ const CountMenu = [
             </div>
             <div class="avatar">
                 <div class="w-20 rounded-full">
-                    <img src="https://placeimg.com/192/192/people" alt="avatar">
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/000/439/863/small/Basic_Ui__28186_29.jpg" alt="avatar">
                 </div>
             </div>
         </div>

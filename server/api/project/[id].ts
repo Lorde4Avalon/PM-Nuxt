@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
     const runtimeConfig = useRuntimeConfig();
     const { apiBase } = runtimeConfig;
     const cookie: string = getCookie(event, 'user') || ''
-    const authToken: string = JSON.parse(cookie).authToken
+    const authToken: string = cookie.length > 0 ? JSON.parse(cookie).token : ''
     if (event.node.req.method === 'GET') {
         const response: any = await $fetch(`${apiBase}/api/project/get/${event.context.params.id}`, {
             headers: {
