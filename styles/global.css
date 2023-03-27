@@ -9,6 +9,10 @@ body {
     @apply w-screen h-full bg-primary-background
 }
 
+input {
+    caret-color: auto;
+}
+
 #__nuxt {
     height: 100vh;
 }

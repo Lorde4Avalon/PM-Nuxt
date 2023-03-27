@@ -31,5 +31,12 @@ export default function useProjectForm() {
         return res
     }
 
-    return { createProject, getAllProjects, getProject, deleteMultiProjects }
+    const inviteUser = async (id: number | string, data: any) => {
+        const res = await useApi(`/api/project/${id}`, {
+            method: 'POST',
+            query: data
+        })
+        return res;
+    }
+    return { createProject, getAllProjects, getProject, deleteMultiProjects, inviteUser }
 }

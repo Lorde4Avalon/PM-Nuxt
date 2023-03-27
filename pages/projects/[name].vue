@@ -13,12 +13,13 @@ definePageMeta({
 })
 
 //Get data
-const { getProject } = useProjectForm()
+const { getProject, inviteUser } = useProjectForm()
 const { createTask, getAllTasks, updateTask } = useTaskForm()
 const route = useRoute()
 const projectId: number = +(route.hash.slice(1))
 const { data: projectData, refresh: projectRefresh } = await getProject(projectId)
 const { data: taskData, refresh: taskRefresh } = await getAllTasks(projectId)
+
 
 //Actions
 const isOpen = ref(false)
@@ -29,6 +30,12 @@ const isTaskOpen = ref(false)
 function setIsTaskOpen(value: boolean) {
     isTaskOpen.value = value
 }
+const isInviteOpen = ref(false)
+function setIsInviteOpen(value: boolean) {
+    isInviteOpen.value = value
+}
+
+const projectInfo = computed(() => projectData.value?.data)
 const taskColumns = computed(() => [
     {
         title: "To Do", tasks: taskData.value?.data?.filter(task => task.status == "Todo") || []
@@ -43,7 +50,10 @@ const taskColumns = computed(() => [
 const drag = ref(false)
 
 // func
-onBeforeMount(() => taskRefresh())
+onBeforeMount(() => {
+    taskRefresh()
+    projectRefresh()
+})
 const selectTask = ref<Task>({
     taskName: '',
     status: ''
@@ -84,6 +94,16 @@ async function onUpdateSubmit(values: Task | any) {
     taskRefresh()
     setIsTaskOpen(false)
 }
+
+async function onInviteSubmit(values: any) {
+    const { data, error } = await inviteUser(projectId, values)
+    if (error.value) {
+        console.log(error.value);
+        return
+    }
+    setIsInviteOpen(false)
+    console.log(values);
+}
 //select options
 const selectOptions = ref([
     { name: 'Todo' },
@@ -97,7 +117,8 @@ const selectOptions = ref([
     <div class="w-full">
         <div class="bg-gray-100 flex justify-between py-5 px-7">
             <div class="titles">
-                <h1 @click="() => navigateTo('/')" class="cursor-pointer font-semibold text-2xl rounded-lg bg-gray-200 py-2 px-4">
+                <h1 @click="() => navigateTo('/')"
+                    class="cursor-pointer font-semibold text-2xl rounded-lg bg-gray-200 py-2 px-4">
                     Projects
                 </h1>
             </div>
@@ -106,13 +127,20 @@ const selectOptions = ref([
             <div class="flex justify-between items-center w-full max-w-6xl">
                 <div>
                     <h1 class="text-4xl font-bold">{{ $route.params.name }}</h1>
-                    <p class="text-xl">{{ projectData?.data?.projectDescription }}</p>
-                    <h1 class="text-base">Update At {{ projectData?.data?.projectUpdatedDate }}</h1>
+                    <p class="text-xl">{{ projectInfo?.projectDescription }}</p>
+                    <h1 class="text-base">Update At {{ projectInfo?.projectUpdatedDate }}</h1>
                 </div>
-                <button @click="setIsOpen(true)"
-                    class="btn border-none w-40 text-white bg-dark-purple/90 hover:bg-dark-purple m-2 mt-3 p-2 shadow rounded-lg text-center font-medium">
-                    <span class="font-bold text-2xl mr-2">+</span> Add a new task
-                </button>
+                <div class="flex align-center">
+                    <!-- invite other user to project -->
+                    <button @click="setIsInviteOpen(true)"
+                        class="btn border-none w-40 text-white bg-dark-purple/80 hover:bg-dark-purple m-2 mt-3 p-2 shadow rounded-lg text-center font-medium">
+                        Invite User
+                    </button>
+                    <button @click="setIsOpen(true)"
+                        class="btn border-none w-40 text-white bg-dark-purple/90 hover:bg-dark-purple m-2 mt-3 p-2 shadow rounded-lg text-center font-medium">
+                        <span class="font-bold text-2xl mr-2">+</span> Add a new task
+                    </button>
+                </div>
             </div>
             <div class="flex py-8">
                 <div v-for="column in taskColumns" :key="column.title"
@@ -125,8 +153,8 @@ const selectOptions = ref([
                             <circle cx="96" cy="256" r="48" fill="currentColor" />
                         </svg>
                     </div>
-                    <draggable @start="drag = true" @end="drag = false" :list="column.tasks" itemKey="id"
-                        :animation="200" ghost-class="ghost-card" group="tasks" class="flex flex-col h-full">
+                    <draggable @start="drag = true" @end="drag = false" :list="column.tasks" itemKey="id" :animation="200"
+                        ghost-class="ghost-card" group="tasks" class="flex flex-col h-full">
                         <!-- must use element as task -->
                         <template #item="{ element, index }">
                             <DashboardTaskCard @click="showTask(element)" :key="index" :task="element"
@@ -171,8 +199,7 @@ const selectOptions = ref([
                                 </label>
                                 <div class="flex items-center">
                                     <div class="relative">
-                                        <div
-                                            class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                                        <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                                         </div>
                                         <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss" label="startTime"
                                             formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true"
@@ -180,12 +207,10 @@ const selectOptions = ref([
                                     </div>
                                     <span class="mx-4 text-gray-500">to</span>
                                     <div class="relative">
-                                        <div
-                                            class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                                        <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                                         </div>
                                         <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss" label="endTime"
-                                            formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true"
-                                            v-model="dateTime.endTime" />
+                                            formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true" v-model="dateTime.endTime" />
                                     </div>
                                 </div>
                                 <label class="label">
@@ -248,8 +273,7 @@ const selectOptions = ref([
                                 </label>
                                 <div class="flex items-center">
                                     <div class="relative">
-                                        <div
-                                            class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                                        <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                                         </div>
                                         <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss" label="startTime"
                                             formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true"
@@ -257,12 +281,10 @@ const selectOptions = ref([
                                     </div>
                                     <span class="mx-4 text-gray-500">to</span>
                                     <div class="relative">
-                                        <div
-                                            class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                                        <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                                         </div>
                                         <VueCtkDateTimePicker format="YYYY-MM-DDTHH:mm:ss" label="endTime"
-                                            formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true"
-                                            v-model="dateTime.endTime" />
+                                            formatted="YYYY-MM-DD HH:mm:ss" :autoClose="true" v-model="dateTime.endTime" />
                                     </div>
                                 </div>
                                 <label class="label">
@@ -280,6 +302,48 @@ const selectOptions = ref([
                                     <button
                                         class="btn inline-flex justify-center rounded-full border-none bg-dark-purple/90 hover:bg-dark-purple px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                                         Update Project
+                                    </button>
+                                </div>
+                            </Form>
+                        </DialogPanel>
+                    </TransitionChild>
+                </div>
+            </div>
+        </Dialog>
+    </TransitionRoot>
+    <TransitionRoot appear :show="isInviteOpen" as="template">
+        <Dialog as="div" @close="setIsInviteOpen(false)" class="relative z-10">
+            <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
+                leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
+                <div class="fixed inset-0 bg-black bg-opacity-25"></div>
+            </TransitionChild>
+
+            <div class="fixed inset-0 overflow-y-auto">
+                <div class="flex min-h-full items-center justify-center p-4 text-center">
+                    <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
+                        enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
+                        leave-to="opacity-0 scale-95">
+                        <DialogPanel
+                            class="w-full max-w-md transform overflow-auto rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                                Invite a Member to Project
+                            </DialogTitle>
+                            <Form @submit="onInviteSubmit" class="mt-2">
+                                <label class="label">
+                                    <span class="label-text">Username</span>
+                                </label>
+                                <Field name="username" type="text" placeholder="Type here"
+                                    class="input input-bordered w-full max-w-xs" />
+
+                                <div class="flex mt-4 gap-x-4">
+                                    <button type="button"
+                                        class="btn inline-flex justify-center rounded-full border-none bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                        @click="setIsInviteOpen(false)">
+                                        Cancel
+                                    </button>
+                                    <button
+                                        class="btn inline-flex justify-center rounded-full border-none bg-dark-purple/90 hover:bg-dark-purple px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+                                        Invite User
                                     </button>
                                 </div>
                             </Form>
